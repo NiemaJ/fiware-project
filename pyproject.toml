@@ -1,0 +1,93 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fiware-digital-twins"
+description = ''
+readme = "README.md"
+requires-python = ">=3.10.0"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Manuel Nieto Jiménez", email = "nietojimenezmanuel@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3.10",
+]
+dependencies = []
+dynamic = ["version"]
+
+[project.urls]
+Documentation = "https://github.com/unknown/fiware-digital-twins#readme"
+Issues = "https://github.com/unknown/fiware-digital-twins/issues"
+Source = "https://github.com/unknown/fiware-digital-twins"
+
+[tool.hatch.version]
+path = "fiware_digital_twins/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pytest",
+  "pytest-cov",
+]
+[tool.hatch.envs.default.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=fiware_digital_twins --cov=tests {args}"
+no-cov = "cov --no-cov {args}"
+
+[tool.hatch.envs.model]
+dependencies = [
+  "pandas",
+  "numpy",
+  "matplotlib",
+  "scikit-learn",
+  "requests",
+  "joblib"
+]
+
+[tool.hatch.envs.model.scripts]
+env = "which python3"
+path = "echo $PWD"
+create_models = "python3 ./model_trainer/src/model_creator.py"
+split_data = "python3 ./model_trainer/src/model/data_splitter.py"
+process_data = "python3 ./model_trainer/src/model/data_processor.py"
+explore_data = "python3 ./model_trainer/src/model/data_explorer.py"
+
+[tool.hatch.envs.api]
+dependencies = [
+  "flask",
+  "joblib",
+  "scikit-learn",
+  "numpy",
+  "pandas"
+]
+
+[tool.hatch.envs.api.scripts]
+set_flask_app = "export FLASK_APP=app.py"
+init_app = "flask --app ./router/app.py run -h localhost -p 8008"
+
+[tool.hatch.envs.devices]
+dependencies = [
+  "requests"
+]
+
+[tool.hatch.envs.devices.scripts]
+dummy_sensor = "python3 ./device/sensor_simulation.py"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["37", "38", "39", "310", "311"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = [
+  "fiware_digital_twins/__about__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

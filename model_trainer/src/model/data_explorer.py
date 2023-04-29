@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-import os
 
 from data_loader import DataLoader
 
 class DataExplorer(object):
-    def __init__(self, path, label, features):
+    def __init__(self, path, label, numerical_values, categorical_values):
         """
         This class receives the dataset to work with and generates a set of
         diagrams to have a better view of how the data are distributed.
         """
-        data_loader = DataLoader(path, label, features)
+        data_loader = DataLoader()
+        data_loader.load_from_csv(path, label, numerical_values, categorical_values)
         self.label_set = data_loader.get_label()
         self.features_set = data_loader.get_features()
 
@@ -60,7 +60,7 @@ class DataExplorer(object):
             ax.set_title(col)
 
             # Save the figure
-            fig.savefig('diagrams/' + col + '_histogram.png')
+            fig.savefig('model_trainer/diagrams/' + col + '_histogram.png')
             plt.close(fig)
 
         for col in categorical_features:
@@ -73,7 +73,7 @@ class DataExplorer(object):
             ax.set_ylabel("Frequency")
 
             # Save the figure
-            fig.savefig('diagrams/' + col + '_histogram.png')
+            fig.savefig('model_trainer/diagrams/' + col + '_histogram.png')
             plt.close(fig)
 
 
@@ -89,7 +89,7 @@ class DataExplorer(object):
             ax.set_title(label + ' vs ' + col + '- correlation: ' + str(correlation))
 
             # Save the figure
-            fig.savefig('diagrams/' + col + '_scatter.png')
+            fig.savefig('model_trainer/diagrams/' + col + '_scatter.png')
             plt.close(fig)
 
         for col in categorical_features:
@@ -100,5 +100,13 @@ class DataExplorer(object):
             ax.set_ylabel(label)
 
             # Save the figure
-            fig.savefig('diagrams/' + col + '_boxplot.png')
+            fig.savefig('model_trainer/diagrams/' + col + '_boxplot.png')
             plt.close(fig)
+
+numeric_features = ['et0', 'pluviometry', 'relativehumidity', 'soilmoisturetotal', 'soiltemperature', 'winddirection', 'windspeed', 'temperature']
+categorical_features = ['hour', 'day', 'month', 'year']
+label = 'temperature'
+features = numeric_features + categorical_features
+
+data_explorer = DataExplorer('./model_trainer/data/training.csv', label, numeric_features, categorical_features)
+data_explorer.visualize_features(label, numeric_features, categorical_features)

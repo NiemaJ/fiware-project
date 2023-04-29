@@ -8,7 +8,7 @@ from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.metrics import mean_squared_error, r2_score, make_scorer
 import joblib
 
-from data_loader import DataLoader
+from .data_processor import DataProcessor
 
 class ModelTrainer(object):
     def __init__(self):
@@ -25,19 +25,28 @@ class ModelTrainer(object):
         self.x_test = None
         self.y_test = None
 
-    def load_dataset(self, path, label, features):
+    def load_dataset(self, label, numeric_features, categorical_features, path=None, url=None, headers=None):
         """
         This method loads a dataset given a file path and generates the sets of
         data needed for training and testing.
         """
 
+        features = numeric_features + categorical_features
+
         # Load the data
-        data_loader = DataLoader(path, label, features)
-        features = data_loader.get_features()
-        label = data_loader.get_label()  
+        data_loader = DataProcessor(path, label, numeric_features + [label], categorical_features)
+        # if path is not None:
+        #     data_loader.load_from_csv(path, label, features)
+        # else:
+        #     data_loader.load_from_api(url, headers, label, features)
+
+        data_loader.remove_outliers()
+        data_loader.normalize()
+        features_set = data_loader.get_features_set()[features]
+        label_set = data_loader.get_label_set()
 
         # Split data 70%-30% into training set and test set
-        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(features, label, test_size=0.30, random_state=0)
+        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(features_set, label_set, test_size=0.30, random_state=0)
 
         print ('Training Set: %d rows\nTest Set: %d rows' % (self.x_train.shape[0], self.x_test.shape[0]))
 
@@ -127,7 +136,7 @@ class ModelTrainer(object):
         """
         This method saves the currently loaded model.
         """
-        joblib.dump(self.model, 'models/' + name + '.pkl')
+        joblib.dump(self.model, './models/' + name + '.pkl')
 
     def get_model_metrics(self, name='model'):
         """
@@ -135,6 +144,7 @@ class ModelTrainer(object):
         """
 
         predictions = self.model.predict(self.x_test)
+        print(self.x_test)
         np.set_printoptions(suppress=True)
         print('Predicted labels: ', np.round(predictions, 1)[:10])
         print('Actual labels   : ' ,self.y_test.to_numpy()[:10])
@@ -148,7 +158,7 @@ class ModelTrainer(object):
         z = np.polyfit(self.y_test, predictions, 1)
         p = np.poly1d(z)
         plt.plot(self.y_test,p(self.y_test), color='magenta')
-        plt.savefig('diagrams/' + name + '_prediction_diagram.png')
+        plt.savefig('./training_results/' + name + '_prediction_diagram.png')
         plt.close()
 
         mse = mean_squared_error(self.y_test, predictions)
@@ -161,5 +171,5 @@ class ModelTrainer(object):
         print("R2:", r2)
 
     def predict_value(self, features_set):
-        return self.model.predict(features_set)
+        return self.model.predict(features_set).tolist()
 

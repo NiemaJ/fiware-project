@@ -1,0 +1,6 @@
+diagrams
+models
+training_results
+model_trainer/data
+
+__pycache__

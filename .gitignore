@@ -3,4 +3,6 @@ models
 training_results
 model_trainer/data
 
+*.csv
+.vscode
 __pycache__

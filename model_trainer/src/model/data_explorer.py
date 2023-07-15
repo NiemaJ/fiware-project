@@ -11,10 +11,10 @@ class DataExplorer(object):
         """
         data_loader = DataLoader()
         data_loader.load_from_csv(path, label, numerical_values, categorical_values)
-        self.label_set = data_loader.get_label()
-        self.features_set = data_loader.get_features()
+        self.label_set: pd.DataFrame = data_loader.get_label_set()
+        self.features_set: pd.DataFrame = data_loader.get_features_set()
 
-    def visualize_label(self, label):
+    def visualize_label(self, label: str) -> None:
         """
         This method generates a histogram and a box diagram to visualize the 
         distribution of the label being given. The diagrams will be saved as an 
@@ -43,7 +43,7 @@ class DataExplorer(object):
         fig.savefig('diagrams/' + label + '_histogram-boxplot.png')
         plt.close(fig)
 
-    def visualize_features(self, label, numeric_features, categorical_features):
+    def visualize_features(self, label: str, numeric_features: list[str], categorical_features: list[str]) -> None:
         """
         This method generates a histogram and scatter diagram for each numeric 
         feature and a bar diagram and box diagram for each categorical feature.

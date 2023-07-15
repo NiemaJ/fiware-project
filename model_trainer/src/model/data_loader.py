@@ -1,44 +1,12 @@
 import os
 import pandas as pd
-import requests
 import matplotlib.pyplot as plt
 
 class DataLoader(object):
     def __init__(self):
-        self.features_set = None
+        self.features_set: pd.DataFrame = None
 
-    def load_from_api(self, url, headers, label, features):
-        """
-            This method loads data requested from an api into a pandas dataframe.
-        """
-        
-        # This variable gets a JSON response
-        response = requests.get(url, headers=headers)
-        json = response.json()['data']
-        data = json['attributes']
-        dates = json['index']
-
-
-        input_data = pd.DataFrame()
-
-        hour = pd.Series(pd.DatetimeIndex(pd.to_datetime(dates)).hour)
-        day = pd.Series(pd.DatetimeIndex(pd.to_datetime(dates)).day)
-        month = pd.Series(pd.DatetimeIndex(pd.to_datetime(dates)).month)
-        year = pd.Series(pd.DatetimeIndex(pd.to_datetime(dates)).year)
-
-        input_data = pd.concat([input_data, hour.rename('hour')], axis=1)
-        input_data = pd.concat([input_data, day.rename('day')], axis=1)
-        input_data = pd.concat([input_data, month.rename('month')], axis=1)
-        input_data = pd.concat([input_data, year.rename('year')], axis=1)
-
-        for value in data:
-            column = pd.DataFrame(data=value['values'], columns=[value['attrName']])
-            input_data = pd.concat([input_data, column], axis=1)
-
-        self.features_set = input_data[features]
-        # self.label_set = input_data[label]
-
-    def load_from_csv(self, path: str, label: str, numeric_features: list, categorical_features: list):
+    def load_from_csv(self, path: str, label: str, numeric_features: list[str], categorical_features: list[str]) -> None:
         """
             This method loads data contained on a csv file into a pandas dataframe.
         """
@@ -55,36 +23,27 @@ class DataLoader(object):
         input_data = pd.concat([input_data, month.rename('month')], axis=1)
         input_data = pd.concat([input_data, year.rename('year')], axis=1)
 
-        self.label = label
-        self.features = numeric_features + categorical_features
-        self.numeric_features = numeric_features
-        self.categorical_features = categorical_features
+        self.label: str = label
+        self.features: list[str] = numeric_features + categorical_features
+        self.numeric_features: list[str] = numeric_features
+        self.categorical_features: list[str] = categorical_features
 
         self.features_set = input_data[self.features]
 
-    def get_label_set(self):
+    def get_label_set(self) -> pd.DataFrame:
         """
         This function retrieves the label set being loaded.
         """
 
         return self.features_set[self.label]
 
-    # def set_label_set(self, label_set):
-    #     self.label_set = label_set
-
-    def get_features_set(self):
+    def get_features_set(self) -> pd.DataFrame:
         """
         This function retrieves the features being loaded.
         """
         return self.features_set
 
-    # def get_data(self):
-    #     return self.data
-
-    # def set_data(self, data):
-    #     self.data = data
-
-    def visualize_label(self, folder):
+    def visualize_label(self, folder: str) -> None:
         """
         This method generates a histogram and a box diagram to visualize the 
         distribution of the label being given. The diagrams will be saved as an 
@@ -119,7 +78,7 @@ class DataLoader(object):
         fig.savefig('diagrams/' + self.label + "/" + folder + "/" + self.label + '_histogram-boxplot.png')
         plt.close(fig)
 
-    def visualize_features(self, folder):
+    def visualize_features(self, folder: str) -> None:
         """
         This method generates a histogram and scatter diagram for each numeric 
         feature and a bar diagram and box diagram for each categorical feature.
@@ -184,4 +143,3 @@ class DataLoader(object):
             # Save the figure
             fig.savefig('diagrams/' + self.label + '/' + folder + "/" + col + '_boxplot.png')
             plt.close(fig)
-

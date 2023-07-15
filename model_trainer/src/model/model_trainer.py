@@ -25,7 +25,7 @@ class ModelTrainer(object):
         self.x_test = None
         self.y_test = None
 
-    def load_dataset(self, label, numeric_features, categorical_features, path=None, url=None, headers=None):
+    def load_dataset(self, label: str, numeric_features: list[str], categorical_features: list[str], path: str=None) -> None:
         """
         This method loads a dataset given a file path and generates the sets of
         data needed for training and testing.
@@ -35,10 +35,6 @@ class ModelTrainer(object):
 
         # Load the data
         data_loader = DataProcessor(path, label, numeric_features + [label], categorical_features)
-        # if path is not None:
-        #     data_loader.load_from_csv(path, label, features)
-        # else:
-        #     data_loader.load_from_api(url, headers, label, features)
 
         data_loader.remove_outliers()
         data_loader.normalize()
@@ -50,7 +46,7 @@ class ModelTrainer(object):
 
         print ('Training Set: %d rows\nTest Set: %d rows' % (self.x_train.shape[0], self.x_test.shape[0]))
 
-    def train_lineal_model(self, name='model'):
+    def train_lineal_model(self, name: str='model') -> None:
         """
         This method trains a Linear Regression model with the dataset being loaded.
         """
@@ -59,7 +55,7 @@ class ModelTrainer(object):
         print('The model has been trained')
         self.get_model_metrics(name)
 
-    def train_lasso_model(self, name='model'):
+    def train_lasso_model(self, name: str='model') -> None:
         """
         This method trains a Linear Lasso Regression model with the dataset being loaded.
         """
@@ -68,7 +64,7 @@ class ModelTrainer(object):
         print('The model has been trained')
         self.get_model_metrics(name)
 
-    def train_tree_model(self, name='model'):
+    def train_tree_model(self, name: str='model') -> None:
         """
         This method trains a Decision Tree Regression model with the dataset being loaded.
         """
@@ -77,24 +73,22 @@ class ModelTrainer(object):
         print('The model has been trained')
         self.get_model_metrics(name)
 
-    def train_ensemble_model(self, name='model', hiperparameters=None):
+    def train_ensemble_model(self, name:str='model') -> None:
         """
         This method trains a Random Forest Regression model with the dataset being loaded.
         """
-
-        if hiperparameters == None:
     
-            # Fit a linear regression model on the training set
-            self.model = RandomForestRegressor().fit(self.x_train, self.y_train)
-            print('The model has been trained')
+        # Fit a linear regression model on the training set
+        self.model = RandomForestRegressor().fit(self.x_train, self.y_train)
+        print('The model has been trained')
 
-            # Get the metrics
-            self.get_model_metrics(name)
+        # Get the metrics
+        self.get_model_metrics(name)
 
-            # Save the model
-            self.save_model(name)
+        # Save the model
+        self.save_model(name)
 
-    def train_gradient_boost_model(self, name='model', hiperparameters=None):
+    def train_gradient_boost_model(self, name: str='model', hiperparameters: dict=None) -> None:
         """
         This method trains a Linear Regression model with the dataset being loaded.
         """
@@ -126,19 +120,19 @@ class ModelTrainer(object):
             # Get the metrics
             self.get_model_metrics(name)
 
-    def load_model(self, path):
+    def load_model(self, path: str) -> None:
         """
         This method loads the specified model.
         """
         self.model = joblib.load(path)
 
-    def save_model(self, name):
+    def save_model(self, name: str) -> None:
         """
         This method saves the currently loaded model.
         """
         joblib.dump(self.model, './models/' + name + '.pkl')
 
-    def get_model_metrics(self, name='model'):
+    def get_model_metrics(self, name: str='model') -> None:
         """
         This method returns diagrams showing the model fitness.
         """
@@ -170,6 +164,5 @@ class ModelTrainer(object):
         r2 = r2_score(self.y_test, predictions)
         print("R2:", r2)
 
-    def predict_value(self, features_set):
+    def predict_value(self, features_set: list[str]) -> list:
         return self.model.predict(features_set).tolist()
-

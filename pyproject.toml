@@ -47,7 +47,6 @@ env = "which python3"
 path = "echo $PWD"
 create_models = "python ./model_trainer/src/model_creator.py"
 split_data = "python ./model_trainer/src/model/data_splitter.py"
-process_data = "python ./model_trainer/src/model/data_processor.py"
 explore_data = "python ./model_trainer/src/model/data_explorer.py"
 
 [tool.hatch.envs.api]

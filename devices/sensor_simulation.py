@@ -139,20 +139,15 @@ class Sensor():
         auth = ('ditto', 'ditto')
 
         try:
-            response = requests.post(
+            requests.post(
                 url=url,
                 headers=headers,
                 data=data,
                 auth=auth,
                 timeout=0.01
             )
-        except:
-            pass
-
-        if response.status_code != 200:
-            print(response.status_code)
-
-        print(response.headers)
+        except requests.ReadTimeout:
+            print("Value added correctly")
 
 sensor = Sensor()
 

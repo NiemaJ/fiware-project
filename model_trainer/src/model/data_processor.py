@@ -7,7 +7,7 @@ from .data_loader import DataLoader
 
 class DataProcessor(DataLoader):
 
-    def __init__(self, path, label, numeric_features, categorical_features):
+    def __init__(self, path: str, label: str, numeric_features: list[str], categorical_features: list[str]):
         self.load_from_csv(path, label, numeric_features, categorical_features)
         
         try:
@@ -18,9 +18,8 @@ class DataProcessor(DataLoader):
         
         self.visualize_label('raw_data')
         self.visualize_features('raw_data')
-        print(len(self.features_set))
 
-    def remove_outliers(self):
+    def remove_outliers(self) -> None:
         """
             This method will filter out outliers values.
         """
@@ -31,9 +30,8 @@ class DataProcessor(DataLoader):
 
         self.visualize_label('filtered_data')
         self.visualize_features('filtered_data')
-        print(len(self.features_set))
 
-    def normalize(self):
+    def normalize(self) -> None:
         """
             This method will normalize the data.
         """
@@ -54,15 +52,3 @@ class DataProcessor(DataLoader):
 
         self.visualize_label('normalized_data')
         self.visualize_features('normalized_data')
-        print(len(self.features_set))
-
-
-
-# numeric_features = ['et0', 'pluviometry', 'relativehumidity', 'soilmoisturetotal', 'soiltemperature', 'winddirection', 'windspeed', 'temperature']
-# categorical_features = ['hour', 'day', 'month', 'year']
-# label = 'temperature'
-# features = numeric_features + categorical_features
-
-# data_processor = DataProcessor('./model_trainer/data/training.csv', label, numeric_features, categorical_features)
-# data_processor.remove_outliers()
-# data_processor.normalize()
